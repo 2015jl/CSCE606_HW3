@@ -11,16 +11,25 @@ class MoviesController < ApplicationController
   end
 
   def index
+   # @ratings = Movie.select(:rating).uniq
+    @all_ratings = Movie.uniq.pluck(:rating)
+
+    if params[:ratings].nil?
+       selected_movies = @all_ratings
+    else
+       selected_movies = params[:ratings].keys
+    end
+
     if params[:sort] == "title"
-        @movies = Movie.all.order(:title)
+        @movies = Movie.where('rating in (?)', selected_movies).order(:title) 
         @title_color = "hilite"
         @release_date_color = ""
     elsif params[:sort] == "release_date"
-        @movies = Movie.all.order(:release_date)
+        @movies = Movie.where('rating in (?)', selected_movies).order(:release_date)
         @release_date_color = "hilite"
         @title_color = ""
     else
-        @movies = Movie.all
+        @movies = Movie.where('rating in (?)',  selected_movies) 
     end
   end
 
