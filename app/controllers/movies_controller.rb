@@ -11,7 +11,27 @@ class MoviesController < ApplicationController
   end
 
   def index
-   # @ratings = Movie.select(:rating).uniq
+    redirect = false
+
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
+    else
+      params[:ratings] = session[:ratings]
+      redirect = true if session[:ratings]
+    end
+
+    if params[:sort]
+      session[:sort] = params[:sort]
+    else
+      params[:sort] = session[:sort]
+      redirect = true if session[:sort]
+    end
+
+    if redirect
+      flash.keep
+      redirect_to movies_path(params)
+    end
+
     @all_ratings = Movie.uniq.pluck(:rating)
 
     if params[:ratings].nil?
